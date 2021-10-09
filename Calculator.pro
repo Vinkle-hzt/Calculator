@@ -20,6 +20,8 @@ SOURCES += \
     widget.cpp
 
 HEADERS += \
+    ArrayList.hpp \
+    Stack.hpp \
     widget.h
 
 FORMS += \
