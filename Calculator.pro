@@ -16,16 +16,22 @@ DEFINES += QT_DEPRECATED_WARNINGS
 #DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
 
 SOURCES += \
+    calculate.cpp \
+    legal.cpp \
     main.cpp \
-    widget.cpp
+    calculatorwindow.cpp
 
 HEADERS += \
     ArrayList.hpp \
     Stack.hpp \
-    widget.h
+    calculate.h \
+    calculatorwindow.h \
+    legal.h
 
 FORMS += \
-    widget.ui
+    calculatorwindow.ui
+
+RC_ICONS = scu.ico
 
 # Default rules for deployment.
 qnx: target.path = /tmp/$${TARGET}/bin
