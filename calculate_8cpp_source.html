@@ -1,0 +1,191 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=9"/>
+<meta name="generator" content="Doxygen 1.9.1"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>Calculator: calculate.cpp 源文件</title>
+<link href="tabs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+</head>
+<body>
+<div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<div id="titlearea">
+<table cellspacing="0" cellpadding="0">
+ <tbody>
+ <tr style="height: 56px;">
+  <td id="projectalign" style="padding-left: 0.5em;">
+   <div id="projectname">Calculator
+   &#160;<span id="projectnumber">0.0.1</span>
+   </div>
+  </td>
+ </tr>
+ </tbody>
+</table>
+</div>
+<!-- end header part -->
+<!-- 制作者 Doxygen 1.9.1 -->
+<script type="text/javascript" src="menudata.js"></script>
+<script type="text/javascript" src="menu.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:cf05388f2679ee054f2beb29a391d25f4e673ac3&amp;dn=gpl-2.0.txt GPL-v2 */
+$(function() {
+  initMenu('',false,false,'search.php','搜索');
+});
+/* @license-end */</script>
+<div id="main-nav"></div>
+</div><!-- top -->
+<div class="header">
+  <div class="headertitle">
+<div class="title">calculate.cpp</div>  </div>
+</div><!--header-->
+<div class="contents">
+<a href="calculate_8cpp.html">浏览该文件的文档.</a><div class="fragment"><div class="line"><a name="l00001"></a><span class="lineno">    1</span>&#160;<span class="preprocessor">#include &quot;<a class="code" href="calculate_8h.html">calculate.h</a>&quot;</span></div>
+<div class="line"><a name="l00002"></a><span class="lineno">    2</span>&#160;<span class="keyword">using namespace </span>std;</div>
+<div class="line"><a name="l00003"></a><span class="lineno">    3</span>&#160; </div>
+<div class="line"><a name="l00004"></a><span class="lineno"><a class="line" href="calculate_8cpp.html#a3eb2b0bf38e52599be9eca2e4fb83758">    4</a></span>&#160;constexpr <span class="keywordtype">double</span> <a class="code" href="calculate_8cpp.html#a3eb2b0bf38e52599be9eca2e4fb83758">eps</a> = 1e-6; </div>
+<div class="line"><a name="l00005"></a><span class="lineno">    5</span>&#160; </div>
+<div class="line"><a name="l00006"></a><span class="lineno">    6</span>&#160;<span class="comment">// 初始化栈内和栈外优先级</span></div>
+<div class="line"><a name="l00007"></a><span class="lineno">    7</span>&#160;<span class="keyword">static</span> map&lt;char, int&gt; inPriority =</div>
+<div class="line"><a name="l00008"></a><span class="lineno">    8</span>&#160;    {{<span class="charliteral">&#39;+&#39;</span>, 3}, {<span class="charliteral">&#39;-&#39;</span>, 3}, {<span class="charliteral">&#39;*&#39;</span>, 5}, {<span class="charliteral">&#39;/&#39;</span>, 5}, {<span class="charliteral">&#39;%&#39;</span>, 5}, {<span class="charliteral">&#39;(&#39;</span>, 1}, {<span class="charliteral">&#39;)&#39;</span>, 8}, {<span class="charliteral">&#39;^&#39;</span>, 7}, {<span class="charliteral">&#39;&amp;&#39;</span>, 7}};</div>
+<div class="line"><a name="l00009"></a><span class="lineno">    9</span>&#160;<span class="keyword">static</span> map&lt;char, int&gt; outPriority =</div>
+<div class="line"><a name="l00010"></a><span class="lineno">   10</span>&#160;    {{<span class="charliteral">&#39;+&#39;</span>, 2}, {<span class="charliteral">&#39;-&#39;</span>, 2}, {<span class="charliteral">&#39;*&#39;</span>, 4}, {<span class="charliteral">&#39;/&#39;</span>, 4}, {<span class="charliteral">&#39;%&#39;</span>, 4}, {<span class="charliteral">&#39;(&#39;</span>, 8}, {<span class="charliteral">&#39;)&#39;</span>, 1}, {<span class="charliteral">&#39;^&#39;</span>, 6}, {<span class="charliteral">&#39;&amp;&#39;</span>, 6}};</div>
+<div class="line"><a name="l00011"></a><span class="lineno">   11</span>&#160; </div>
+<div class="line"><a name="l00012"></a><span class="lineno">   12</span>&#160;<span class="comment">// 检查是否能取余</span></div>
+<div class="line"><a name="l00013"></a><span class="lineno">   13</span>&#160;<span class="keyword">static</span> <span class="keywordtype">bool</span> canDoMod(<span class="keyword">const</span> <span class="keywordtype">double</span> n1, <span class="keyword">const</span> <span class="keywordtype">double</span> n2)</div>
+<div class="line"><a name="l00014"></a><span class="lineno">   14</span>&#160;{</div>
+<div class="line"><a name="l00015"></a><span class="lineno">   15</span>&#160;    <span class="keywordflow">return</span> (abs(n1 - round(n1)) &lt; <a class="code" href="calculate_8cpp.html#a3eb2b0bf38e52599be9eca2e4fb83758">eps</a>) &amp;&amp; (abs(n2 - round(n2)) &lt; <a class="code" href="calculate_8cpp.html#a3eb2b0bf38e52599be9eca2e4fb83758">eps</a>);</div>
+<div class="line"><a name="l00016"></a><span class="lineno">   16</span>&#160;}</div>
+<div class="line"><a name="l00017"></a><span class="lineno">   17</span>&#160; </div>
+<div class="line"><a name="l00018"></a><span class="lineno">   18</span>&#160;<span class="comment">// 计算 n1 op n2</span></div>
+<div class="line"><a name="l00019"></a><span class="lineno">   19</span>&#160;<span class="keyword">static</span> <span class="keywordtype">double</span> calNum(<span class="keyword">const</span> <span class="keywordtype">double</span> n1, <span class="keyword">const</span> <span class="keywordtype">double</span> n2, <span class="keyword">const</span> <span class="keywordtype">char</span> op)</div>
+<div class="line"><a name="l00020"></a><span class="lineno">   20</span>&#160;{</div>
+<div class="line"><a name="l00021"></a><span class="lineno">   21</span>&#160;    <span class="keywordflow">switch</span> (op)</div>
+<div class="line"><a name="l00022"></a><span class="lineno">   22</span>&#160;    {</div>
+<div class="line"><a name="l00023"></a><span class="lineno">   23</span>&#160;    <span class="keywordflow">case</span> <span class="charliteral">&#39;+&#39;</span>:</div>
+<div class="line"><a name="l00024"></a><span class="lineno">   24</span>&#160;        <span class="keywordflow">return</span> n1 + n2;</div>
+<div class="line"><a name="l00025"></a><span class="lineno">   25</span>&#160;    <span class="keywordflow">case</span> <span class="charliteral">&#39;-&#39;</span>:</div>
+<div class="line"><a name="l00026"></a><span class="lineno">   26</span>&#160;        <span class="keywordflow">return</span> n1 - n2;</div>
+<div class="line"><a name="l00027"></a><span class="lineno">   27</span>&#160;    <span class="keywordflow">case</span> <span class="charliteral">&#39;*&#39;</span>:</div>
+<div class="line"><a name="l00028"></a><span class="lineno">   28</span>&#160;        <span class="keywordflow">return</span> n1 * n2;</div>
+<div class="line"><a name="l00029"></a><span class="lineno">   29</span>&#160;    <span class="keywordflow">case</span> <span class="charliteral">&#39;/&#39;</span>:</div>
+<div class="line"><a name="l00030"></a><span class="lineno">   30</span>&#160;    {</div>
+<div class="line"><a name="l00031"></a><span class="lineno">   31</span>&#160;        <span class="keywordflow">if</span> (n2 == 0)</div>
+<div class="line"><a name="l00032"></a><span class="lineno">   32</span>&#160;            <span class="keywordflow">throw</span> <span class="stringliteral">&quot;除数不能为0，请检查后重试...&quot;</span>;</div>
+<div class="line"><a name="l00033"></a><span class="lineno">   33</span>&#160;        <span class="keywordflow">return</span> n1 / n2;</div>
+<div class="line"><a name="l00034"></a><span class="lineno">   34</span>&#160;    }</div>
+<div class="line"><a name="l00035"></a><span class="lineno">   35</span>&#160; </div>
+<div class="line"><a name="l00036"></a><span class="lineno">   36</span>&#160;    <span class="keywordflow">case</span> <span class="charliteral">&#39;%&#39;</span>:</div>
+<div class="line"><a name="l00037"></a><span class="lineno">   37</span>&#160;    {</div>
+<div class="line"><a name="l00038"></a><span class="lineno">   38</span>&#160;        <span class="keywordflow">if</span> (canDoMod(n1, n2))</div>
+<div class="line"><a name="l00039"></a><span class="lineno">   39</span>&#160;            <span class="keywordflow">return</span> (<span class="keywordtype">int</span>)(n1 + 0.5) % (<span class="keywordtype">int</span>)(n2 + 0.5);</div>
+<div class="line"><a name="l00040"></a><span class="lineno">   40</span>&#160;        <span class="keywordflow">throw</span> <span class="stringliteral">&quot;只能对整数取余，请检查后重试...&quot;</span>;</div>
+<div class="line"><a name="l00041"></a><span class="lineno">   41</span>&#160;    }</div>
+<div class="line"><a name="l00042"></a><span class="lineno">   42</span>&#160;    <span class="keywordflow">case</span> <span class="charliteral">&#39;^&#39;</span>:</div>
+<div class="line"><a name="l00043"></a><span class="lineno">   43</span>&#160;    {</div>
+<div class="line"><a name="l00044"></a><span class="lineno">   44</span>&#160;        <span class="keywordtype">double</span> ans = pow(n1, n2);</div>
+<div class="line"><a name="l00045"></a><span class="lineno">   45</span>&#160;        <span class="keywordflow">if</span> (isnan(ans))</div>
+<div class="line"><a name="l00046"></a><span class="lineno">   46</span>&#160;            <span class="keywordflow">throw</span> <span class="stringliteral">&quot;不能对负数开方，请检查后重试...&quot;</span>;</div>
+<div class="line"><a name="l00047"></a><span class="lineno">   47</span>&#160;        <span class="keywordflow">return</span> ans;</div>
+<div class="line"><a name="l00048"></a><span class="lineno">   48</span>&#160;    }</div>
+<div class="line"><a name="l00049"></a><span class="lineno">   49</span>&#160;    <span class="keywordflow">case</span> <span class="charliteral">&#39;&amp;&#39;</span>:</div>
+<div class="line"><a name="l00050"></a><span class="lineno">   50</span>&#160;    {</div>
+<div class="line"><a name="l00051"></a><span class="lineno">   51</span>&#160;        <span class="keywordtype">double</span> ans = pow(n1, 1 / n2);</div>
+<div class="line"><a name="l00052"></a><span class="lineno">   52</span>&#160;        <span class="keywordflow">if</span> (isnan(ans))</div>
+<div class="line"><a name="l00053"></a><span class="lineno">   53</span>&#160;            <span class="keywordflow">throw</span> <span class="stringliteral">&quot;不能对负数开方，请检查后重试...&quot;</span>;</div>
+<div class="line"><a name="l00054"></a><span class="lineno">   54</span>&#160;        <span class="keywordflow">return</span> ans;</div>
+<div class="line"><a name="l00055"></a><span class="lineno">   55</span>&#160;    }</div>
+<div class="line"><a name="l00056"></a><span class="lineno">   56</span>&#160;    }</div>
+<div class="line"><a name="l00057"></a><span class="lineno">   57</span>&#160;    <span class="keywordflow">return</span> 0;</div>
+<div class="line"><a name="l00058"></a><span class="lineno">   58</span>&#160;}</div>
+<div class="line"><a name="l00059"></a><span class="lineno">   59</span>&#160; </div>
+<div class="line"><a name="l00060"></a><span class="lineno">   60</span>&#160;<span class="keyword">static</span> <span class="keywordtype">void</span> calculate(<a class="code" href="class_stack.html">Stack&lt;double&gt;</a> &amp;numbers, <a class="code" href="class_stack.html">Stack&lt;char&gt;</a> &amp;operands)</div>
+<div class="line"><a name="l00061"></a><span class="lineno">   61</span>&#160;{</div>
+<div class="line"><a name="l00062"></a><span class="lineno">   62</span>&#160;    <span class="keywordtype">double</span> n1, n2;</div>
+<div class="line"><a name="l00063"></a><span class="lineno">   63</span>&#160;    <span class="keywordtype">char</span> op = operands.<a class="code" href="class_stack.html#a3cf7365af88634dc340669ed5e0193b4">top</a>();</div>
+<div class="line"><a name="l00064"></a><span class="lineno">   64</span>&#160;    operands.<a class="code" href="class_stack.html#a312e7f6c761a199c1369fbe651e084f0">pop</a>();</div>
+<div class="line"><a name="l00065"></a><span class="lineno">   65</span>&#160;    n2 = numbers.<a class="code" href="class_stack.html#a3cf7365af88634dc340669ed5e0193b4">top</a>();</div>
+<div class="line"><a name="l00066"></a><span class="lineno">   66</span>&#160;    numbers.<a class="code" href="class_stack.html#a312e7f6c761a199c1369fbe651e084f0">pop</a>();</div>
+<div class="line"><a name="l00067"></a><span class="lineno">   67</span>&#160;    n1 = numbers.<a class="code" href="class_stack.html#a3cf7365af88634dc340669ed5e0193b4">top</a>();</div>
+<div class="line"><a name="l00068"></a><span class="lineno">   68</span>&#160;    numbers.<a class="code" href="class_stack.html#a312e7f6c761a199c1369fbe651e084f0">pop</a>();</div>
+<div class="line"><a name="l00069"></a><span class="lineno">   69</span>&#160;    <span class="comment">// cout &lt;&lt; n1 &lt;&lt; op &lt;&lt; n2 &lt;&lt; &quot;=&quot; &lt;&lt; calNum(n1, n2, op) &lt;&lt; endl;</span></div>
+<div class="line"><a name="l00070"></a><span class="lineno">   70</span>&#160;    numbers.<a class="code" href="class_stack.html#af5ef7e6e88dda992e20d007183d93bdb">push</a>(calNum(n1, n2, op));</div>
+<div class="line"><a name="l00071"></a><span class="lineno">   71</span>&#160;}</div>
+<div class="line"><a name="l00072"></a><span class="lineno">   72</span>&#160; </div>
+<div class="line"><a name="l00073"></a><span class="lineno"><a class="line" href="calculate_8cpp.html#aade2b18d7429f3def22eed81f8e5ccb8">   73</a></span>&#160;<span class="keywordtype">double</span> <a class="code" href="calculate_8cpp.html#aade2b18d7429f3def22eed81f8e5ccb8">runExpression</a>(<span class="keyword">const</span> <span class="keywordtype">string</span> &amp;str)</div>
+<div class="line"><a name="l00074"></a><span class="lineno">   74</span>&#160;{</div>
+<div class="line"><a name="l00075"></a><span class="lineno">   75</span>&#160;    istringstream inStream(str); <span class="comment">// 将参数转换成字符流</span></div>
+<div class="line"><a name="l00076"></a><span class="lineno">   76</span>&#160;    <a class="code" href="class_stack.html">Stack&lt;double&gt;</a> numbers;       <span class="comment">// 存储数据</span></div>
+<div class="line"><a name="l00077"></a><span class="lineno">   77</span>&#160;    <a class="code" href="class_stack.html">Stack&lt;char&gt;</a> operands;        <span class="comment">// 存储操作符</span></div>
+<div class="line"><a name="l00078"></a><span class="lineno">   78</span>&#160;    <span class="keywordtype">char</span> op;                     <span class="comment">// 当前操作符</span></div>
+<div class="line"><a name="l00079"></a><span class="lineno">   79</span>&#160;    <span class="keywordtype">bool</span> minusFlag = <span class="keyword">true</span>;       <span class="comment">// 开头默认将减号识别为负号</span></div>
+<div class="line"><a name="l00080"></a><span class="lineno">   80</span>&#160;    <span class="keywordflow">while</span> (inStream &gt;&gt; op)</div>
+<div class="line"><a name="l00081"></a><span class="lineno">   81</span>&#160;    {</div>
+<div class="line"><a name="l00082"></a><span class="lineno">   82</span>&#160;        <span class="keywordflow">if</span> (isdigit(op))</div>
+<div class="line"><a name="l00083"></a><span class="lineno">   83</span>&#160;        {</div>
+<div class="line"><a name="l00084"></a><span class="lineno">   84</span>&#160;            inStream.putback(op);</div>
+<div class="line"><a name="l00085"></a><span class="lineno">   85</span>&#160;            <span class="keywordtype">double</span> number;</div>
+<div class="line"><a name="l00086"></a><span class="lineno">   86</span>&#160;            inStream &gt;&gt; number;</div>
+<div class="line"><a name="l00087"></a><span class="lineno">   87</span>&#160;            numbers.<a class="code" href="class_stack.html#af5ef7e6e88dda992e20d007183d93bdb">push</a>(number);</div>
+<div class="line"><a name="l00088"></a><span class="lineno">   88</span>&#160;            <span class="comment">// cout &lt;&lt;&quot;push number &quot; &lt;&lt; number &lt;&lt; endl;</span></div>
+<div class="line"><a name="l00089"></a><span class="lineno">   89</span>&#160; </div>
+<div class="line"><a name="l00090"></a><span class="lineno">   90</span>&#160;            <span class="comment">// 遇见数字，则将减号视为运算符s</span></div>
+<div class="line"><a name="l00091"></a><span class="lineno">   91</span>&#160;            minusFlag = <span class="keyword">false</span>;</div>
+<div class="line"><a name="l00092"></a><span class="lineno">   92</span>&#160;        }</div>
+<div class="line"><a name="l00093"></a><span class="lineno">   93</span>&#160;        <span class="keywordflow">else</span></div>
+<div class="line"><a name="l00094"></a><span class="lineno">   94</span>&#160;        {</div>
+<div class="line"><a name="l00095"></a><span class="lineno">   95</span>&#160;            <span class="comment">// 如果开头遇见负号,则先压入0,视作0-该数</span></div>
+<div class="line"><a name="l00096"></a><span class="lineno">   96</span>&#160;            <span class="keywordflow">if</span> (op == <span class="charliteral">&#39;-&#39;</span> &amp;&amp; minusFlag)</div>
+<div class="line"><a name="l00097"></a><span class="lineno">   97</span>&#160;                numbers.<a class="code" href="class_stack.html#af5ef7e6e88dda992e20d007183d93bdb">push</a>(0);</div>
+<div class="line"><a name="l00098"></a><span class="lineno">   98</span>&#160;            <span class="comment">// 如果遇见左括号，重置minusFlag</span></div>
+<div class="line"><a name="l00099"></a><span class="lineno">   99</span>&#160;            <span class="keywordflow">if</span> (op == <span class="charliteral">&#39;(&#39;</span>)</div>
+<div class="line"><a name="l00100"></a><span class="lineno">  100</span>&#160;                minusFlag = <span class="keyword">true</span>;</div>
+<div class="line"><a name="l00101"></a><span class="lineno">  101</span>&#160;            <span class="keywordflow">else</span></div>
+<div class="line"><a name="l00102"></a><span class="lineno">  102</span>&#160;                minusFlag = <span class="keyword">false</span>;</div>
+<div class="line"><a name="l00103"></a><span class="lineno">  103</span>&#160; </div>
+<div class="line"><a name="l00104"></a><span class="lineno">  104</span>&#160;            <span class="comment">// 每次将栈内优先级大于当前运算符栈外优先级的计算完成</span></div>
+<div class="line"><a name="l00105"></a><span class="lineno">  105</span>&#160;            <span class="keywordflow">while</span> (!operands.<a class="code" href="class_stack.html#a644718bb2fb240de962dc3c9a1fdf0dc">empty</a>())</div>
+<div class="line"><a name="l00106"></a><span class="lineno">  106</span>&#160;            {</div>
+<div class="line"><a name="l00107"></a><span class="lineno">  107</span>&#160;                <span class="comment">// cout &lt;&lt; op &lt;&lt; outPriority[op] &lt;&lt; &quot; &quot; &lt;&lt; operands.top() &lt;&lt;inPriority[operands.top()] &lt;&lt; endl;</span></div>
+<div class="line"><a name="l00108"></a><span class="lineno">  108</span>&#160;                <span class="keywordflow">if</span> (outPriority[op] &lt; inPriority[operands.<a class="code" href="class_stack.html#a3cf7365af88634dc340669ed5e0193b4">top</a>()])</div>
+<div class="line"><a name="l00109"></a><span class="lineno">  109</span>&#160;                    calculate(numbers, operands);</div>
+<div class="line"><a name="l00110"></a><span class="lineno">  110</span>&#160;                <span class="keywordflow">else</span> <span class="keywordflow">if</span> (outPriority[op] == inPriority[operands.<a class="code" href="class_stack.html#a3cf7365af88634dc340669ed5e0193b4">top</a>()])</div>
+<div class="line"><a name="l00111"></a><span class="lineno">  111</span>&#160;                {</div>
+<div class="line"><a name="l00112"></a><span class="lineno">  112</span>&#160;                    operands.<a class="code" href="class_stack.html#a312e7f6c761a199c1369fbe651e084f0">pop</a>();</div>
+<div class="line"><a name="l00113"></a><span class="lineno">  113</span>&#160;                    <span class="comment">// 右括号遇到左括号后退出循环</span></div>
+<div class="line"><a name="l00114"></a><span class="lineno">  114</span>&#160;                    <span class="keywordflow">break</span>;</div>
+<div class="line"><a name="l00115"></a><span class="lineno">  115</span>&#160;                }</div>
+<div class="line"><a name="l00116"></a><span class="lineno">  116</span>&#160;                <span class="keywordflow">else</span></div>
+<div class="line"><a name="l00117"></a><span class="lineno">  117</span>&#160;                    <span class="keywordflow">break</span>;</div>
+<div class="line"><a name="l00118"></a><span class="lineno">  118</span>&#160;            }</div>
+<div class="line"><a name="l00119"></a><span class="lineno">  119</span>&#160;            <span class="comment">// 如果不是右括号则插入运算符</span></div>
+<div class="line"><a name="l00120"></a><span class="lineno">  120</span>&#160;            <span class="keywordflow">if</span> (op != <span class="charliteral">&#39;)&#39;</span>)</div>
+<div class="line"><a name="l00121"></a><span class="lineno">  121</span>&#160;            {</div>
+<div class="line"><a name="l00122"></a><span class="lineno">  122</span>&#160;                <span class="comment">// cout &lt;&lt; &quot;push operands &quot; &lt;&lt; op &lt;&lt; endl;</span></div>
+<div class="line"><a name="l00123"></a><span class="lineno">  123</span>&#160;                operands.<a class="code" href="class_stack.html#af5ef7e6e88dda992e20d007183d93bdb">push</a>(op);</div>
+<div class="line"><a name="l00124"></a><span class="lineno">  124</span>&#160;            }</div>
+<div class="line"><a name="l00125"></a><span class="lineno">  125</span>&#160;        }</div>
+<div class="line"><a name="l00126"></a><span class="lineno">  126</span>&#160;    }</div>
+<div class="line"><a name="l00127"></a><span class="lineno">  127</span>&#160;    <span class="comment">// 计算剩余的所有运算</span></div>
+<div class="line"><a name="l00128"></a><span class="lineno">  128</span>&#160;    <span class="keywordflow">while</span> (!operands.<a class="code" href="class_stack.html#a644718bb2fb240de962dc3c9a1fdf0dc">empty</a>())</div>
+<div class="line"><a name="l00129"></a><span class="lineno">  129</span>&#160;        calculate(numbers, operands);</div>
+<div class="line"><a name="l00130"></a><span class="lineno">  130</span>&#160;    <span class="keywordflow">return</span> numbers.<a class="code" href="class_stack.html#a3cf7365af88634dc340669ed5e0193b4">top</a>();</div>
+<div class="line"><a name="l00131"></a><span class="lineno">  131</span>&#160;}</div>
+<div class="ttc" id="acalculate_8cpp_html_a3eb2b0bf38e52599be9eca2e4fb83758"><div class="ttname"><a href="calculate_8cpp.html#a3eb2b0bf38e52599be9eca2e4fb83758">eps</a></div><div class="ttdeci">constexpr double eps</div><div class="ttdoc">浮点数的差值</div><div class="ttdef"><b>Definition:</b> <a href="calculate_8cpp_source.html#l00004">calculate.cpp:4</a></div></div>
+<div class="ttc" id="acalculate_8cpp_html_aade2b18d7429f3def22eed81f8e5ccb8"><div class="ttname"><a href="calculate_8cpp.html#aade2b18d7429f3def22eed81f8e5ccb8">runExpression</a></div><div class="ttdeci">double runExpression(const string &amp;str)</div><div class="ttdef"><b>Definition:</b> <a href="calculate_8cpp_source.html#l00073">calculate.cpp:73</a></div></div>
+<div class="ttc" id="acalculate_8h_html"><div class="ttname"><a href="calculate_8h.html">calculate.h</a></div></div>
+<div class="ttc" id="aclass_stack_html"><div class="ttname"><a href="class_stack.html">Stack</a></div><div class="ttdoc">栈类</div><div class="ttdef"><b>Definition:</b> <a href="_stack_8hpp_source.html#l00013">Stack.hpp:14</a></div></div>
+<div class="ttc" id="aclass_stack_html_a312e7f6c761a199c1369fbe651e084f0"><div class="ttname"><a href="class_stack.html#a312e7f6c761a199c1369fbe651e084f0">Stack::pop</a></div><div class="ttdeci">void pop()</div><div class="ttdoc">弹出栈元素</div><div class="ttdef"><b>Definition:</b> <a href="_stack_8hpp_source.html#l00026">Stack.hpp:26</a></div></div>
+<div class="ttc" id="aclass_stack_html_a3cf7365af88634dc340669ed5e0193b4"><div class="ttname"><a href="class_stack.html#a3cf7365af88634dc340669ed5e0193b4">Stack::top</a></div><div class="ttdeci">T &amp; top()</div><div class="ttdoc">获取栈顶元素</div><div class="ttdef"><b>Definition:</b> <a href="_stack_8hpp_source.html#l00046">Stack.hpp:46</a></div></div>
+<div class="ttc" id="aclass_stack_html_a644718bb2fb240de962dc3c9a1fdf0dc"><div class="ttname"><a href="class_stack.html#a644718bb2fb240de962dc3c9a1fdf0dc">Stack::empty</a></div><div class="ttdeci">bool empty() const</div><div class="ttdoc">检查栈是否为空</div><div class="ttdef"><b>Definition:</b> <a href="_stack_8hpp_source.html#l00086">Stack.hpp:86</a></div></div>
+<div class="ttc" id="aclass_stack_html_af5ef7e6e88dda992e20d007183d93bdb"><div class="ttname"><a href="class_stack.html#af5ef7e6e88dda992e20d007183d93bdb">Stack::push</a></div><div class="ttdeci">void push(T val)</div><div class="ttdoc">把元素添加到栈中</div><div class="ttdef"><b>Definition:</b> <a href="_stack_8hpp_source.html#l00036">Stack.hpp:36</a></div></div>
+</div><!-- fragment --></div><!-- contents -->
+<!-- start footer part -->
+<hr class="footer"/><address class="footer"><small>
+制作者&#160;<a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.1
+</small></address>
+</body>
+</html>
