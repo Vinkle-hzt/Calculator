@@ -57,6 +57,7 @@ static double calNum(const double n1, const double n2, const char op)
     return 0;
 }
 
+// 计算当前栈顶的数字和运算符的结果
 static void calculate(Stack<double> &numbers, Stack<char> &operands)
 {
     double n1, n2;
